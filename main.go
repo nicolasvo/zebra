@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -45,17 +46,27 @@ func setUserLanguage(user string, language string, dataFile string) {
 
 func main() {
 	dataFile := "user_language.csv"
-	var languageMenu = &tb.ReplyMarkup{}
-	var fr = languageMenu.Data("French", "fr")
-	var en = languageMenu.Data("English", "en")
-	var es = languageMenu.Text("Spanish")
+	languageMenu := &tb.ReplyMarkup{}
+
 	languageMenu.Inline(
-		languageMenu.Row(fr),
-		languageMenu.Row(en),
-		languageMenu.Row(es),
+		languageMenu.Row(tb.Btn{
+			Unique: "fr",
+			Text:   "French",
+		}),
+		languageMenu.Row(tb.Btn{
+			Unique: "en",
+			Text:   "English",
+		}),
+		languageMenu.Row(tb.Btn{
+			Unique: "de",
+			Text:   "German",
+		}),
+		languageMenu.Row(tb.Btn{
+			Unique: "ru",
+			Text:   "Russian",
+		}),
 	)
 
-	log.Println(languageMenu.InlineKeyboard)
 	languageMenu.InlineKeyboard = append(languageMenu.InlineKeyboard)
 
 	b, err := tb.NewBot(tb.Settings{
@@ -74,15 +85,25 @@ func main() {
 
 	b.Handle("/language", func(m *tb.Message) {
 		setUserLanguage(strconv.Itoa(m.Sender.ID), "en", dataFile)
-		b.Send(m.Sender, "test inline keyboard", languageMenu)
+		b.Send(m.Sender, "Languages available", languageMenu)
 
 	})
 
-	b.Handle(&fr, func(c *tb.Callback) {
-		b.Respond(c, &tb.CallbackResponse{
-			Text: "Language was set",
+	for _, button := range languageMenu.InlineKeyboard {
+		button := button
+		b.Handle(&button[0], func(c *tb.Callback) {
+			setUserLanguage(strconv.Itoa(c.Sender.ID), button[0].Unique, dataFile)
+			message := fmt.Sprintf("Language was set to %s", button[0].Text)
+			b.Respond(c, &tb.CallbackResponse{
+				Text: message,
+			})
+			b.Send(c.Sender, message)
 		})
-		b.Send(c.Sender, "test message")
+	}
+
+	b.Handle(tb.OnVoice, func(m *tb.Message) {
+		b.Send(m.Sender, "voice message sent.")
+		log.Println(m)
 	})
 
 	b.Start()
