@@ -9,4 +9,4 @@ build:
 	fi
 
 clean:
-	rm zebra
+	rm -f zebra
