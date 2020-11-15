@@ -151,7 +151,7 @@ func main() {
 	}
 
 	b.Handle("/start", func(m *tb.Message) {
-		b.Send(m.Sender, "Oh, hello there. \nSet your /language")
+		b.Send(m.Sender, "Oh, hello there. \nSet your /language and send me a voice message, I will recognize the text and send it back to you!")
 		setUserLanguage(strconv.Itoa(m.Sender.ID), "en", dataFile)
 	})
 
@@ -163,7 +163,7 @@ func main() {
 		button := button
 		b.Handle(&button[0], func(c *tb.Callback) {
 			setUserLanguage(strconv.Itoa(c.Sender.ID), button[0].Unique, dataFile)
-			message := fmt.Sprintf("Language was set to %s", button[0].Text)
+			message := fmt.Sprintf("Language was set to %s. Send me a voice message.", button[0].Text)
 			b.Respond(c, &tb.CallbackResponse{
 				Text: message,
 			})
