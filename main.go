@@ -132,6 +132,10 @@ func main() {
 			Unique: "ru",
 			Text:   "Russian",
 		}),
+		languageMenu.Row(tb.Btn{
+			Unique: "zh",
+			Text:   "Chinese",
+		}),
 	)
 
 	languageMenu.InlineKeyboard = append(languageMenu.InlineKeyboard)
@@ -174,10 +178,10 @@ func main() {
 			log.Fatal(err)
 			return
 		}
-		filePath := fmt.Sprintf("./voice-messages/%s-%s.ogg", userID, getSlug())
+		filePath := fmt.Sprintf("%s-%s.ogg", userID, getSlug())
 		b.Download(&f, filePath)
-		language := getUserLanguage(userID, dataFile)
-		transcription := getTranscript(filePath, language)
+		languageCode := getUserLanguage(userID, dataFile)
+		transcription := getTranscript(filePath, languageCode)
 		b.Send(m.Sender, transcription)
 		os.Remove(filePath)
 	})
