@@ -71,7 +71,9 @@ func getUserLanguage(user string, dataFile string) string {
 
 	res := contains(user, data)
 	if res == 0 {
-		log.Fatal("User language not set.")
+		setUserLanguage(user, "en", dataFile)
+		log.Println("User language not set. Setting it to default language English.")
+		return "en"
 	}
 	return data[res][1]
 }
