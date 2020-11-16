@@ -97,7 +97,7 @@ func getTranscript(filePath string, languageCode string) string {
 	resp, err := client.Recognize(ctx, &speechpb.RecognizeRequest{
 		Config: &speechpb.RecognitionConfig{
 			Encoding:        speechpb.RecognitionConfig_OGG_OPUS,
-			SampleRateHertz: 16000,
+			SampleRateHertz: 48000,
 			LanguageCode:    languageCode,
 		},
 		Audio: &speechpb.RecognitionAudio{
