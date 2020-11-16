@@ -93,24 +93,27 @@ func getTranscript(filePath string, languageCode string) string {
 		log.Fatalf("Failed to read file: %v", err)
 	}
 
-	// Detects speech in the audio file.
-	resp, err := client.Recognize(ctx, &speechpb.RecognizeRequest{
-		Config: &speechpb.RecognitionConfig{
-			Encoding:        speechpb.RecognitionConfig_OGG_OPUS,
-			SampleRateHertz: 48000,
-			LanguageCode:    languageCode,
-		},
-		Audio: &speechpb.RecognitionAudio{
-			AudioSource: &speechpb.RecognitionAudio_Content{Content: data},
-		},
-	})
-	if err != nil {
-		log.Fatalf("Failed to recognize: %v", err)
+	sampleRates := []int32{16000, 48000}
+	for _, sampleRate := range sampleRates {
+		// Detects speech in the audio file.
+		resp, err := client.Recognize(ctx, &speechpb.RecognizeRequest{
+			Config: &speechpb.RecognitionConfig{
+				Encoding:        speechpb.RecognitionConfig_OGG_OPUS,
+				SampleRateHertz: sampleRate,
+				LanguageCode:    languageCode,
+			},
+			Audio: &speechpb.RecognitionAudio{
+				AudioSource: &speechpb.RecognitionAudio_Content{Content: data},
+			},
+		})
+		if err != nil {
+			log.Fatalf("Failed to recognize: %v", err)
+		}
+		if len(resp.Results) != 0 {
+			return resp.Results[0].Alternatives[0].Transcript
+		}
 	}
-	if len(resp.Results) == 0 {
-		return "Transcription unsuccessful 💀"
-	}
-	return resp.Results[0].Alternatives[0].Transcript
+	return "Transcription unsuccessful 💀"
 }
 
 func main() {
