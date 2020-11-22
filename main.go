@@ -138,6 +138,10 @@ func main() {
 			Text:   "Russian",
 		}),
 		languageMenu.Row(tb.Btn{
+			Unique: "vi",
+			Text:   "Vietnamese",
+		}),
+		languageMenu.Row(tb.Btn{
 			Unique: "zh",
 			Text:   "Chinese",
 		}),
